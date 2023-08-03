@@ -1,3 +1,4 @@
 {
-    "mypy-type-checker.importStrategy": "fromEnvironment"
+    "mypy-type-checker.importStrategy": "fromEnvironment",
+    "black-formatter.importStrategy": "fromEnvironment"
 }
