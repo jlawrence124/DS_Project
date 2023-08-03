@@ -1,0 +1,46 @@
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Logs
+*.log
+
+# Virtual environment
+venv/
+env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Other generated files
+*.csv
+*.html
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.wav
+*.mp3
+*.mp4
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.rar
+*.gz
+*.bz2
+*.xz
+*.exe
+*.dll
+*.so
+*.dylib
+*.egg-info/
+dist/
+build/
+processed/*.txt

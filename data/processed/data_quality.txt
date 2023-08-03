@@ -1,0 +1,50 @@
+Column names:
+Index(['Key', 'text', 'lang', 'created_at', 'created_day', 'timeonly',
+       'created_dateonly', 'datetime', 'retweet_count', 'coordinates', 'geo',
+       'place', 'retweeted', 'truncated', 'user_favourites_count',
+       'user_followers_count', 'user_following', 'user_friends_count',
+       'user_geo_enabled', 'user_listed_count', 'user_location',
+       'user_statuses_count', 'user_time_zone', 'user_screen_name', 'file'],
+      dtype='object')
+
+Number of rows:
+31567
+
+Number of null rows:
+Key                          0
+text                         0
+lang                         0
+created_at                   0
+created_day                  0
+timeonly                     0
+created_dateonly             0
+datetime                     0
+retweet_count                0
+coordinates              31424
+geo                      31424
+place                    30881
+retweeted                    0
+truncated                    0
+user_favourites_count        0
+user_followers_count         0
+user_following               6
+user_friends_count           0
+user_geo_enabled             0
+user_listed_count            0
+user_location             8472
+user_statuses_count          0
+user_time_zone            8975
+user_screen_name             0
+file                         0
+dtype: int64
+
+Number of duplicate rows:
+0
+
+highest retweet count entries:
+         Key                                               text  retweet_count  retweeted  user_followers_count user_screen_name
+18540  18541  RT @PennStateIFC: With the current devastation...        1142924      False                   139    Xx_Chobani_xX
+30591  30592  RT @BarackObama: "People must learn to hate, a...         404311      False                   463   Shaniel_Dannon
+15072  15073  RT @itssavannahxox: so i ordered a chair for m...         273976      False                   138    Xx_Chobani_xX
+15119  15120  RT @itssavannahxox: so i ordered a chair for m...         273976      False                   354        _CHOBANI_
+29393  29394  RT @jk_rowling: Hell of a day for the Presiden...         264722      False                   238        chobani__

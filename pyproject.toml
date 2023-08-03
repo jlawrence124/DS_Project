@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "ds-project"
+version = "0.1.0"
+description = ""
+authors = ["Joshua Lawrence <jlawrence124@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ds_project"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.0.3"
+jupyter = "^1.0.0"
+jupyter-contrib-nbextensions = "^0.7.0"
+rise = "^5.7.1"
+python-dotenv = "^1.0.0"
+transformers = "^4.31.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pandas-stubs = "^2.0.2.230605"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
