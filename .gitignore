@@ -16,7 +16,6 @@ env/
 .idea/
 
 # Other generated files
-*.csv
 *.html
 *.pdf
 *.png
@@ -42,4 +41,4 @@ env/
 *.egg-info/
 dist/
 build/
-processed/*.txt
+data/processed/*
