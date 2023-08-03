@@ -18,6 +18,7 @@ numpy = "^1.25.2"
 
 [tool.poetry.group.dev.dependencies]
 pandas-stubs = "^2.0.2.230605"
+pytest = "^7.4.0"
 
 [build-system]
 requires = ["poetry-core"]
