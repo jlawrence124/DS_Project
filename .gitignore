@@ -13,7 +13,6 @@ env/
 .ipynb_checkpoints/
 
 # IDE-specific files
-.vscode/
 .idea/
 
 # Other generated files
