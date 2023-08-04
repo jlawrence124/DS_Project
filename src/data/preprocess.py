@@ -112,7 +112,9 @@ def preprocess_data():
 
     print(combined_data_frame.head(5))
     print(combined_data_frame.shape)
-    analyze(combined_data_frame)
+    # send reduced size data_frame to sentiment analysis
+    analyze(combined_data_frame.head(500))
+    # analyze(combined_data_frame)
 
 
 if __name__ == "__main__":

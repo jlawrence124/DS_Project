@@ -26,7 +26,9 @@ sentiment_analyzer = pipeline(
     "text-classification",
     model=MODEL_NAME,
     tokenizer=tokenizer,
-    device=device
+    device=device,
+    max_length=512,
+    truncation=True,
 )
 
 
@@ -41,19 +43,24 @@ class Sentiment:
     brand_risk: bool = False
 
 
-def analyze(data_frame: pd.DataFrame, batch_size=50) -> List[Sentiment]:
+def analyze(data_frame: pd.DataFrame, batch_size=50) -> pd.DataFrame:
     """
     Analyzes the sentiment of a given text by a set batch size.
     """
-    results = []
     raw_tweets_text = get_raw_tweet_text_data(data_frame)
     for i in tqdm(
         range(0, len(raw_tweets_text), batch_size), desc="Analyzing sentiments"
+        # range(0, 50), desc="Analyzing sentiments"
     ):
         batch = raw_tweets_text[i : i + batch_size]
         result = sentiment_analyzer(batch)
-        results.extend(result)
-    return results
+        # append the results to the matching data_frame id row
+        # data_frame.loc[i : i + batch_size, "sentiment"] = result
+        # add new column to data_frame
+        data_frame["sentiment"] = result
+
+    write_sentiment_to_csv(data_frame)
+    return data_frame
 
 
 def get_raw_tweet_text_data(data_frame: pd.DataFrame) -> List[str]:
@@ -67,6 +74,5 @@ def write_sentiment_to_csv(data_frame: pd.DataFrame):
     """
     Writes a csv file with sentiment analysis of the dataset.
     """
-
-    data_frame["sentiment"] = data_frame["text"].apply(analyze)
     data_frame.to_csv(Path("data/processed/sentiment.csv"), index=False)
+
