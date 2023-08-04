@@ -1,1 +1,2 @@
-ignore=missing-module-docstring
+[MESSAGES CONTROL]
+disable=C0114
