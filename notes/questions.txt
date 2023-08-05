@@ -1,0 +1,1 @@
+* does the pretrained sentiment analysis model take into account emoji?

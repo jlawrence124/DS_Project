@@ -1,1 +1,1 @@
-Using Named Entity Recognition to determine which brand-related keywords are best
+* Using Named Entity Recognition to determine which brand-related keywords are best

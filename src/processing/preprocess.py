@@ -104,18 +104,14 @@ def write_data_quality_csv_file(data_frame: pd.DataFrame):
 def filter_irrelevant_data(
     data_frame: pd.DataFrame,
     capitalized_brand_name="",
-    company_keywords=None,
+    company_keywords=[],
     relevancy_threshold=5,
 ) -> pd.DataFrame:
     """
     Returns a filtered DataFrame if the input DataFrame is full of overwhelmingly irrelevant tweets.
     """
-    if company_keywords is not None:
-        file_name_key_word = company_keywords[0]
-    else:
-        company_keywords = []
-        file_name_key_word = capitalized_brand_name.lower().replace(" ", "_")
-    
+    file_name_key_word = capitalized_brand_name.lower().replace(" ", "_")
+
     combined_keywords = []
     yogurt_keywords = [
         "yogurt",
@@ -161,41 +157,42 @@ def filter_irrelevant_data(
         "@activia",
         "@activiauk",
         "@chobani",
-        "@Chobani_UK",
+        "@chobani_uk",
         "@dannon",
         "@fageusa",
         "@fageuk",
         "@fage_fr",
-        "@TheGreekGods",
-        "@GreekGodsUK",
-        "@LiberteUSA",
-        "@LiberteCanada",
-        "@MapleHillCream",
+        "@thegreekgods",
+        "@greekgodsuk",
+        "@liberteusa",
+        "@libertecanada",
+        "@maplehillcream",
         "@noosayoghurt",
-        "@OrganicValley",
+        "@organicvalley",
         "@siggisdairy",
-        "@SmariYogurt",
-        "@SmariOrganics",
-        "@Stonyfield",
+        "@smariyogurt",
+        "@smariorganics",
+        "@stonyfield",
         "@wallabyyogurt",
-        "@Yoplait",
+        "@yoplait",
     ]
     other_yogurt_brands = [
         "brown cow",
         "cabot",
+        "lactalis",
         "oikos",
         "powerful yogurt",
-        "silk",
         "yocrunch",
     ]
     other_yogurt_brand_accounts = [
         "@browncowyogurt",
         "@cabotcheese",
         "@cabotcreamery",
+        "@groupe_lactalis",
         "@oikos",
-        "@LoveMySilk",
-        "@PowerfulYogurt",
-        "@YoCrunch",
+        "@lovemysilk",
+        "@powerfulyogurt",
+        "@yocrunch",
     ]
 
     combined_keywords.extend(yogurt_keywords)
@@ -218,19 +215,29 @@ def filter_irrelevant_data(
     # we need to at least have another brand mention or yogurt keyword
     if capitalized_brand_name in ["Greek Gods", "Siggi", "Liberté",  "Wallaby", "Vanilla Bean",]:
         # remove the current brand name from the list of yogurt brands
-        # yogurt_brand_names.remove(capitalized_brand_name.lower())
+        yogurt_brand_names.remove(capitalized_brand_name.lower())
         relevant_tweets = data_frame[
-        data_frame["text"].apply(
-            lambda x: capitalized_brand_name.lower() in x.lower() and (
-                any(word in x.lower() for word in yogurt_keywords)
-                or x.lower() in yogurt_brand_names
-                or x.lower() in yogurt_brand_accounts
+            data_frame["text"].apply(
+                lambda x: capitalized_brand_name.lower() in x.lower() and (
+                    # if the tweet mentions any yogurt keywords
+                    any(word in x.lower() for word in yogurt_keywords)
+                    # or if the tweet mentions any food related keywords
+                    or any(word in x.lower() for word in food_related_keywords)
+                    # or if the tweet mentions another yogurt brand
+                    or any(word in x.lower() for word in yogurt_brand_names)
+                    or any(word in x.lower() for word in yogurt_brand_accounts)
+                    or any(word in x.lower() for word in other_yogurt_brands)
+                    or any(word in x.lower() for word in other_yogurt_brand_accounts)
+                )
             )
-        )
-    ]
+        ]
     else:
         relevant_tweets = data_frame[
-            data_frame["file"].str.contains(file_name_key_word)
+            (data_frame["text"].str.contains(capitalized_brand_name)
+                | data_frame["text"].apply(
+                    lambda x: any(word in x.lower() for word in company_keywords)
+                )
+            )
             & data_frame["text"].apply(
                 lambda x: any(word in x.lower() for word in combined_keywords)
             )
@@ -261,21 +268,21 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> pd.DataFrame:
     """
     brand_keywords = {
         "Activia": ["activia", "@activia", "@activiauk",],
-        "Chobani": ["chobani", "@chobani", "@Chobani_UK",],
-        "Dannon": ["dannon", "@dannon", "Danone",],
+        "Chobani": ["chobani", "@chobani", "@chobani_uk",],
+        "Dannon": ["dannon", "@dannon", "danone",],
         "Fage": ["fage", "@fageusa", "@fageuk",],
-        "Greek Gods": ["greek_gods", "@TheGreekGods", "@GreekGodsUK",],
-        "Liberté": ["liberte", "liberté", "@LiberteUSA", "@LiberteCanada",],
-        "Maple Hill": ["maple_hill", "@MapleHillCream",],
+        "Greek Gods": ["greek_gods", "@thegreekgods", "@greekgodsuk",],
+        "Liberté": ["liberte", "liberté", "@liberteusa", "@libertecanada",],
+        "Maple Hill": ["maple_hill", "@maplehillcream",],
         "Noosa": ["noosa", "@noosayoghurt",],
         "Organic Valley": ["organic_valley", "@OrganicValley",],
         "Siggi": ["siggi", "@siggisdairy",],
-        "Smari": ["smari", "@SmariYogurt", "@SmariOrganics", "Smári",],
-        "Stonyfield": ["stonyfield", "@Stonyfield",],
+        "Smari": ["smari", "@smariyogurt", "@smariorganics", "smári",],
+        "Stonyfield": ["stonyfield", "@stonyfield",],
         # leaving out vanilla bean for the time being as it muddies the data
         # "Vanilla Bean": ["vanilla_bean",],
         "Wallaby": ["wallaby", "@wallabyyogurt",],
-        "Yoplait": ["yoplait", "@Yoplait",],
+        "Yoplait": ["yoplait", "@yoplait",],
     }
 
     print(f"\n\nBefore filtering ::: {len(data_frame)}")
@@ -301,12 +308,12 @@ def preprocess_data():
     combined_data_frame["text"] = combined_data_frame["text"].str.replace(r"http[s]?://t\.[^\s]*|[^[$]]", "", regex=True)
 
     # drop duplicate tweets
-    deduped_data_frame = combined_data_frame.drop_duplicates(subset=["text"])
+    # deduped_data_frame = combined_data_frame.drop_duplicates(subset=["text"])
 
     # filter out irrelevant data
-    filtered_and_deduped_data_frame = prepare_data_for_filtering(deduped_data_frame)
+    filtered_data_frame = prepare_data_for_filtering(combined_data_frame)
 
-    print(len(filtered_and_deduped_data_frame))
+    print(len(filtered_data_frame))
 
     # send reduced size data_frame to sentiment analysis
     # analyze(filtered_and_deduped_data_frame.head(1000), 20)

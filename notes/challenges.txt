@@ -1,10 +1,12 @@
-encoding emoji
-separate files
-common names
-capitalization
-irrelevant related tweets
-    - common names like "greek gods" or names shared by other public figures/brands like "Siggi"
-    - "Vanilla Bean" posed a particular challenge
+* encoding emoji
+    * used utf-8 encoding instead of ISO
+* separate files
+    * combined csv files into a single file
+* common names/names shared with other brands/famous people
+    * ensured that these tweets also had to have a mention of known yogurt-specific brands or yogurt-related words
+* irrelevant related tweets
+    * common names like "greek gods" or names shared by other public figures/brands like "Siggi"
+    * "Vanilla Bean" posed a particular challenge
 different twitter links preventing data dedupes
     - used regex filter
     
