@@ -1,0 +1,3 @@
+* removed "vanilla bean" from the company list as it was muddying the data
+* decided to keep the duplicate tweets as they are indications of relevancy that do no directly correlate to the "retweet_count" column
+* 
