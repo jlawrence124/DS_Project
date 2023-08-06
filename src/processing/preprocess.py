@@ -240,9 +240,11 @@ def filter_irrelevant_data(
                 )
                 and (
                     # if the tweet mentions any yogurt keywords
-                    (any(word in x.lower() for word in yogurt_keywords)
-                    # or if the tweet mentions any food related keywords
-                    or any(word in x.lower() for word in food_related_keywords))
+                    (
+                        any(word in x.lower() for word in yogurt_keywords)
+                        # or if the tweet mentions any food related keywords
+                        or any(word in x.lower() for word in food_related_keywords)
+                    )
                     # if the tweet mentions another yogurt brand
                     or any(word in x.lower() for word in yogurt_brand_names)
                     or any(word in x.lower() for word in yogurt_brand_accounts)
@@ -392,7 +394,9 @@ def remove_tweets_with_negative_keywords(
         return data_frame
     negative_keywords_regex = "|".join(negative_keywords).lower()
     return data_frame[
-        ~data_frame["text"].str.lower().str.contains(negative_keywords_regex, case=False)
+        ~data_frame["text"]
+        .str.lower()
+        .str.contains(negative_keywords_regex, case=False)
     ]
 
 
