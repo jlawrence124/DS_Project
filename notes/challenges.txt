@@ -8,5 +8,4 @@
     * common names like "greek gods" or names shared by other public figures/brands like "Siggi"
     * "Vanilla Bean" posed a particular challenge
 different twitter links preventing data dedupes
-    - used regex filter
-    
+    * used regex filter

@@ -1,3 +1,6 @@
 * removed "vanilla bean" from the company list as it was muddying the data
-* decided to keep the duplicate tweets as they are indications of relevancy that do no directly correlate to the "retweet_count" column
-* 
+* decided to keep the duplicate tweets 
+    * they are indications of relevancy that do not directly correlate to the "retweet_count" column
+        * the tweets we have are a subset of the global number of tweets that the "retweet_count" refers to 
+    * retweet_count is still relevant, but it is better suited for combination with things like follower count
+        

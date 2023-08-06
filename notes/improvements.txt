@@ -1,1 +1,5 @@
 * Using Named Entity Recognition to determine which brand-related keywords are best
+* Obtain a more complete dataset of yogurt brands and twitter handles
+* Obtain a list of hashtags related to yogurt brands
+* Multi-lingual analysis
+    * Could remove false captures like "activia" as a brand

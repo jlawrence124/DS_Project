@@ -1,2 +1,2 @@
-trained model  = https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest
-    - This is a roBERTa-base model trained on ~58M tweets and finetuned for sentiment analysis with the TweetEval benchmark. 
+* trained model  = https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment-latest
+    * This is a roBERTa-base model trained on ~58M tweets and finetuned for sentiment analysis with the TweetEval benchmark. 
