@@ -1,9 +1,16 @@
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List
 import pandas as pd
 from sentiment_analysis import analyze
+from resources.word_lists import (
+    get_yogurt_keywords,
+    food_related_keywords,
+    yogurt_brand_names,
+    yogurt_brand_accounts,
+    secondary_yogurt_brands,
+    secondary_yogurt_brand_accounts,
+)
 
 
 @dataclass
@@ -132,96 +139,15 @@ def filter_irrelevant_data(
     company_keywords = company_twitter_handles + [brand_name_lower] + alternate_names
 
     combined_keywords = []
-    yogurt_keywords = [
-        "yogurt",
-        "yoghurt",
-        "yoghourt",
-        "pro-biotic",
-        "probiotic",
-        brand_name,
-    ]
-    food_related_keywords = [
-        "delicious",
-        "tasty",
-        "healthy",
-        "breakfast",
-        "dairy",
-        "flavor",
-        "creamy",
-        "creamery",
-        "protein",
-        "spoonful",
-        "snack",
-        "dessert",
-        "nutritious",
-    ]
-    yogurt_brand_names = [
-        "activia",
-        "chobani",
-        "dannon",
-        "fage",
-        "greek gods",
-        "liberte",
-        "maple hill",
-        "noosa",
-        "organic valley",
-        "siggi",
-        "smari",
-        "stonyfield",
-        # "vanilla bean",
-        "wallaby",
-        "yoplait",
-    ]
-    yogurt_brand_accounts = [
-        "@activia",
-        "@activiauk",
-        "@chobani",
-        "@chobani_uk",
-        "@dannon",
-        "@fageusa",
-        "@fageuk",
-        "@fage_fr",
-        "@thegreekgods",
-        "@greekgodsuk",
-        "@liberteusa",
-        "@libertecanada",
-        "@maplehillcream",
-        "@noosayoghurt",
-        "@organicvalley",
-        "@siggisdairy",
-        "@smariyogurt",
-        "@smariorganics",
-        "@stonyfield",
-        "@wallabyyogurt",
-        "@yoplait",
-    ]
-    other_yogurt_brands = [
-        "brown cow",
-        "cabot",
-        "lactalis",
-        "oikos",
-        "powerful yogurt",
-        "yocrunch",
-    ]
-    other_yogurt_brand_accounts = [
-        "@browncowyogurt",
-        "@cabotcheese",
-        "@cabotcreamery",
-        "@groupe_lactalis",
-        "@oikos",
-        "@lovemysilk",
-        "@powerfulyogurt",
-        "@uk_lactalis",
-        "@yocrunch",
-    ]
+    yogurt_keywords = get_yogurt_keywords(brand_name_lower)
 
     combined_keywords = (
         yogurt_keywords
         + company_keywords
         + yogurt_brand_names
         + yogurt_brand_accounts
-        + other_yogurt_brands
-        + other_yogurt_brand_accounts
+        + secondary_yogurt_brands
+        + secondary_yogurt_brand_accounts
         + (food_related_keywords if brand.has_food_related_name else [])
     )
 
@@ -249,8 +175,8 @@ def filter_irrelevant_data(
                     # if the tweet mentions another yogurt brand
                     or any(word in x.lower() for word in yogurt_brand_names)
                     or any(word in x.lower() for word in yogurt_brand_accounts)
-                    or any(word in x.lower() for word in other_yogurt_brands)
-                    or any(word in x.lower() for word in other_yogurt_brand_accounts)
+                    or any(word in x.lower() for word in secondary_yogurt_brands)
+                    or any(word in x.lower() for word in secondary_yogurt_brand_accounts)
                 )
             )
         ]
