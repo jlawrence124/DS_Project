@@ -1,11 +1,26 @@
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 import pandas as pd
 from dotenv import load_dotenv
 from sentiment_analysis import analyze
 
 # Load the environment variables from the .env file
 load_dotenv()
+
+
+@dataclass
+class Brand:
+    """
+    Brand object
+    """
+
+    twitter_handles: List[str]
+    brand_name: str
+    alternate_names: List[str] = field(default_factory=list)
+    negative_keywords: List[str] = field(default_factory=list)
+    is_nonspecific_name: bool = False
+    has_food_related_name: bool = False
 
 
 def get_csv_files() -> List[str]:
@@ -103,21 +118,30 @@ def write_data_quality_csv_file(data_frame: pd.DataFrame):
 
 def filter_irrelevant_data(
     data_frame: pd.DataFrame,
-    capitalized_brand_name="",
-    company_keywords=[],
+    brand: Brand,
     relevancy_threshold=5,
 ) -> pd.DataFrame:
     """
     Returns a filtered DataFrame if the input DataFrame is full of overwhelmingly irrelevant tweets.
     """
-    file_name_key_word = capitalized_brand_name.lower().replace(" ", "_")
+    # initialize relevant_tweets as an empty DataFrame
+    relevant_tweets = pd.DataFrame()
+    company_twitter_handles = brand.twitter_handles
+    brand_name = brand.brand_name
+    alternate_names = brand.alternate_names
+    brand_name_lower = brand_name.lower()
+
+    file_name_key_word = brand_name_lower.replace(" ", "_")
+    company_keywords = company_twitter_handles + [brand_name_lower] + alternate_names
 
     combined_keywords = []
     yogurt_keywords = [
         "yogurt",
         "yoghurt",
         "yoghourt",
-        capitalized_brand_name,
+        "pro-biotic",
+        "probiotic",
+        brand_name,
     ]
     food_related_keywords = [
         "delicious",
@@ -134,19 +158,17 @@ def filter_irrelevant_data(
         "dessert",
         "nutritious",
     ]
-    # keep these lowercase
     yogurt_brand_names = [
         "activia",
         "chobani",
         "dannon",
         "fage",
         "greek gods",
-        "liberté",
+        "liberte",
         "maple hill",
         "noosa",
         "organic valley",
         "siggi",
-        "smári",
         "smari",
         "stonyfield",
         # "vanilla bean",
@@ -192,38 +214,40 @@ def filter_irrelevant_data(
         "@oikos",
         "@lovemysilk",
         "@powerfulyogurt",
+        "@uk_lactalis",
         "@yocrunch",
     ]
 
-    combined_keywords.extend(yogurt_keywords)
+    combined_keywords = (
+        yogurt_keywords
+        + company_keywords
+        + yogurt_brand_names
+        + yogurt_brand_accounts
+        + other_yogurt_brands
+        + other_yogurt_brand_accounts
+        + (food_related_keywords if brand.has_food_related_name else [])
+    )
 
-    # add the other yogurt brands to the list of keywords
-    combined_keywords.extend(company_keywords)
-    combined_keywords.extend(yogurt_brand_names)
-    combined_keywords.extend(yogurt_brand_accounts)
-    combined_keywords.extend(other_yogurt_brands)
-    combined_keywords.extend(other_yogurt_brand_accounts)
-
-    # Because "Vanilla Bean" is food related, we can not rely on food adjective keywords
-    if capitalized_brand_name not in ["Vanilla Bean"]:
+    if not brand.has_food_related_name:
         combined_keywords.extend(food_related_keywords)
-
-    # initialize relevant_tweets as an empty DataFrame
-    relevant_tweets = pd.DataFrame()
 
     # If the brand name is a common word, unaffiliated name or brand,
     # we need to at least have another brand mention or yogurt keyword
-    if capitalized_brand_name in ["Greek Gods", "Siggi", "Liberté",  "Wallaby", "Vanilla Bean",]:
+    if brand.is_nonspecific_name:
         # remove the current brand name from the list of yogurt brands
-        yogurt_brand_names.remove(capitalized_brand_name.lower())
+        yogurt_brand_names.remove(brand_name_lower)
         relevant_tweets = data_frame[
             data_frame["text"].apply(
-                lambda x: capitalized_brand_name.lower() in x.lower() and (
+                lambda x: (
+                    brand_name_lower in x.lower()
+                    or any(word in x.lower() for word in company_keywords)
+                )
+                and (
                     # if the tweet mentions any yogurt keywords
-                    any(word in x.lower() for word in yogurt_keywords)
+                    (any(word in x.lower() for word in yogurt_keywords)
                     # or if the tweet mentions any food related keywords
-                    or any(word in x.lower() for word in food_related_keywords)
-                    # or if the tweet mentions another yogurt brand
+                    or any(word in x.lower() for word in food_related_keywords))
+                    # if the tweet mentions another yogurt brand
                     or any(word in x.lower() for word in yogurt_brand_names)
                     or any(word in x.lower() for word in yogurt_brand_accounts)
                     or any(word in x.lower() for word in other_yogurt_brands)
@@ -233,7 +257,8 @@ def filter_irrelevant_data(
         ]
     else:
         relevant_tweets = data_frame[
-            (data_frame["text"].str.contains(capitalized_brand_name)
+            (
+                data_frame["text"].str.contains(brand_name)
                 | data_frame["text"].apply(
                     lambda x: any(word in x.lower() for word in company_keywords)
                 )
@@ -242,9 +267,7 @@ def filter_irrelevant_data(
                 lambda x: any(word in x.lower() for word in combined_keywords)
             )
         ]
-    print(
-        f"Number of relevant {capitalized_brand_name} tweets found: {len(relevant_tweets)}"
-    )
+    print(f"Number of relevant {brand_name} tweets found: {len(relevant_tweets)}")
 
     relevant_tweets_file_path = (
         f"data/processed/{file_name_key_word}_relevant_tweets.csv"
@@ -255,43 +278,126 @@ def filter_irrelevant_data(
     if len(relevant_tweets) >= relevancy_threshold:
         return data_frame
 
-    print(
-        f"BELOW RELEVANCY THRESHOLD for {capitalized_brand_name} tweets. Filtering out...\n\n"
-    )
+    print(f"BELOW RELEVANCY THRESHOLD for {brand_name} tweets. Filtering out...\n\n")
 
     return data_frame[~data_frame["file"].str.contains(file_name_key_word)]
 
 
 def prepare_data_for_filtering(data_frame: pd.DataFrame) -> pd.DataFrame:
     """
-    Prepares list of brands to filter out of dataset if they do not have relevant yogurt tweets.
+    Prepares brand dict to filter out of dataset if they do not have relevant yogurt tweets.
     """
-    brand_keywords = {
-        "Activia": ["activia", "@activia", "@activiauk",],
-        "Chobani": ["chobani", "@chobani", "@chobani_uk",],
-        "Dannon": ["dannon", "@dannon", "danone",],
-        "Fage": ["fage", "@fageusa", "@fageuk",],
-        "Greek Gods": ["greek_gods", "@thegreekgods", "@greekgodsuk",],
-        "Liberté": ["liberte", "liberté", "@liberteusa", "@libertecanada",],
-        "Maple Hill": ["maple_hill", "@maplehillcream",],
-        "Noosa": ["noosa", "@noosayoghurt",],
-        "Organic Valley": ["organic_valley", "@OrganicValley",],
-        "Siggi": ["siggi", "@siggisdairy",],
-        "Smari": ["smari", "@smariyogurt", "@smariorganics", "smári",],
-        "Stonyfield": ["stonyfield", "@stonyfield",],
-        # leaving out vanilla bean for the time being as it muddies the data
-        # "Vanilla Bean": ["vanilla_bean",],
-        "Wallaby": ["wallaby", "@wallabyyogurt",],
-        "Yoplait": ["yoplait", "@yoplait",],
+    # brand dict with twitter handles, company name, and alternate names
+    brands: Dict[str, Brand] = {
+        "Activia": Brand(
+            twitter_handles=["@activia", "@activiauk"],
+            brand_name="Activia",
+            negative_keywords=["activia benz", "mens-rights-activia"],
+        ),
+        "Chobani": Brand(
+            twitter_handles=["@chobani", "@chobani_uk"],
+            brand_name="Chobani",
+        ),
+        "Dannon": Brand(
+            twitter_handles=["@dannon"],
+            brand_name="Dannon",
+            alternate_names=[
+                "danone",
+            ],
+            is_nonspecific_name=True,
+        ),
+        "Fage": Brand(
+            twitter_handles=["@fageusa", "@fageuk"],
+            brand_name="Fage",
+        ),
+        "Greek Gods": Brand(
+            twitter_handles=["@thegreekgods", "@greekgodsuk"],
+            brand_name="Greek Gods",
+            is_nonspecific_name=True,
+        ),
+        "Liberte": Brand(
+            twitter_handles=["@liberteusa", "@libertecanada"],
+            brand_name="Liberte",
+            alternate_names=[
+                "liberté",
+            ],
+            is_nonspecific_name=True,
+        ),
+        "Maple Hill": Brand(
+            twitter_handles=["@maplehillcream"],
+            brand_name="Maple Hill",
+            is_nonspecific_name=True,
+        ),
+        "Noosa": Brand(
+            twitter_handles=["@noosayoghurt"],
+            brand_name="Noosa",
+        ),
+        "Organic Valley": Brand(
+            twitter_handles=["@OrganicValley"],
+            brand_name="Organic Valley",
+        ),
+        "Siggi": Brand(
+            twitter_handles=["@siggisdairy"],
+            brand_name="Siggi",
+        ),
+        "Smari": Brand(
+            twitter_handles=["@smariyogurt", "@smariorganics"],
+            brand_name="Smari",
+            alternate_names=[
+                "smári",
+            ],
+        ),
+        "Stonyfield": Brand(
+            twitter_handles=["@stonyfield"],
+            brand_name="Stonyfield",
+        ),
+        "Wallaby": Brand(
+            twitter_handles=["@wallabyyogurt"],
+            brand_name="Wallaby",
+            is_nonspecific_name=True,
+        ),
+        # Vanilla Bean is muddying the data and is likely not even a brand
+        # "Vanilla Bean": Brand(
+        #     twitter_handles=[],
+        #     brand_name="Vanilla Bean",
+        #     alternate_names=[],
+        #     is_nonspecific_name=True,
+        #     has_food_related_name=True,
+        # ),
+        "Yoplait": Brand(
+            twitter_handles=["@yoplait"],
+            brand_name="Yoplait",
+        ),
     }
 
     print(f"\n\nBefore filtering ::: {len(data_frame)}")
+
     # this will filter out both greek_gods json file entries
-    for key, values in brand_keywords.items():
-        data_frame = filter_irrelevant_data(data_frame, key, values, 5)
+    for values in brands.values():
+        data_frame = remove_tweets_with_negative_keywords(data_frame, values)
+        data_frame = filter_irrelevant_data(
+            data_frame,
+            brand=values,
+            relevancy_threshold=5,
+        )
     print(f"After filtering ::: {len(data_frame)}\n\n")
 
     return data_frame
+
+
+def remove_tweets_with_negative_keywords(
+    data_frame: pd.DataFrame, brand: Brand
+) -> pd.DataFrame:
+    """
+    Removes tweets with negative keywords from the dataset.
+    """
+    negative_keywords = brand.negative_keywords
+    if len(negative_keywords) == 0:
+        return data_frame
+    negative_keywords_regex = "|".join(negative_keywords).lower()
+    return data_frame[
+        ~data_frame["text"].str.lower().str.contains(negative_keywords_regex, case=False)
+    ]
 
 
 def preprocess_data():
@@ -305,7 +411,9 @@ def preprocess_data():
     write_data_quality_csv_file(combined_data_frame)
 
     # remove twitter links - regex test here https://regex101.com/r/wZ0dAP/1
-    combined_data_frame["text"] = combined_data_frame["text"].str.replace(r"http[s]?://t\.[^\s]*|[^[$]]", "", regex=True)
+    combined_data_frame["text"] = combined_data_frame["text"].str.replace(
+        r"http[s]?://t\.[^\s]*|[^[$]]", "", regex=True
+    )
 
     # drop duplicate tweets
     # deduped_data_frame = combined_data_frame.drop_duplicates(subset=["text"])

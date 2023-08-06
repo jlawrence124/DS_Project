@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Literal
+from typing import List
 import pandas as pd
 import torch
 from tqdm import tqdm
