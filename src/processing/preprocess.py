@@ -2,11 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Dict
 import pandas as pd
-from dotenv import load_dotenv
 from sentiment_analysis import analyze
-
-# Load the environment variables from the .env file
-load_dotenv()
 
 
 @dataclass
