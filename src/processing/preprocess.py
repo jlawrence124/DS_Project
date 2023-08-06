@@ -1,6 +1,7 @@
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 import pandas as pd
 from sentiment_analysis import analyze
 
@@ -127,7 +128,7 @@ def filter_irrelevant_data(
     alternate_names = brand.alternate_names
     brand_name_lower = brand_name.lower()
 
-    file_name_key_word = brand_name_lower.replace(" ", "_")
+    company_name_snake_case = brand_name_lower.replace(" ", "_")
     company_keywords = company_twitter_handles + [brand_name_lower] + alternate_names
 
     combined_keywords = []
@@ -267,37 +268,47 @@ def filter_irrelevant_data(
         ]
     print(f"Number of relevant {brand_name} tweets found: {len(relevant_tweets)}")
 
-    relevant_tweets_file_path = (
-        f"data/processed/{file_name_key_word}_relevant_tweets.csv"
-    )
-    relevant_tweets.to_csv(relevant_tweets_file_path, index=False, encoding="utf-8")
-
     # if the filtered data_frame is over the specified threshold
     if len(relevant_tweets) >= relevancy_threshold:
-        return data_frame
+        return relevant_tweets
 
     print(f"BELOW RELEVANCY THRESHOLD for {brand_name} tweets. Filtering out...\n\n")
 
-    return data_frame[~data_frame["file"].str.contains(file_name_key_word)]
+    return relevant_tweets[
+        ~relevant_tweets["file"].str.contains(company_name_snake_case)
+    ]
 
 
-def prepare_data_for_filtering(data_frame: pd.DataFrame) -> pd.DataFrame:
+def prepare_data_for_filtering(data_frame: pd.DataFrame) -> List[pd.DataFrame]:
     """
     Prepares brand dict to filter out of dataset if they do not have relevant yogurt tweets.
     """
+    company_data_frame_list = []
+
     # brand dict with twitter handles, company name, and alternate names
     brands: Dict[str, Brand] = {
         "Activia": Brand(
-            twitter_handles=["@activia", "@activiauk"],
+            twitter_handles=[
+                "@activia",
+                "@activiauk",
+            ],
             brand_name="Activia",
-            negative_keywords=["activia benz", "mens-rights-activia"],
+            negative_keywords=[
+                "activia benz",
+                "mens-rights-activia",
+            ],
         ),
         "Chobani": Brand(
-            twitter_handles=["@chobani", "@chobani_uk"],
+            twitter_handles=[
+                "@chobani",
+                "@chobani_uk",
+            ],
             brand_name="Chobani",
         ),
         "Dannon": Brand(
-            twitter_handles=["@dannon"],
+            twitter_handles=[
+                "@dannon",
+            ],
             brand_name="Dannon",
             alternate_names=[
                 "danone",
@@ -305,16 +316,25 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> pd.DataFrame:
             is_nonspecific_name=True,
         ),
         "Fage": Brand(
-            twitter_handles=["@fageusa", "@fageuk"],
+            twitter_handles=[
+                "@fageusa",
+                "@fageuk",
+            ],
             brand_name="Fage",
         ),
         "Greek Gods": Brand(
-            twitter_handles=["@thegreekgods", "@greekgodsuk"],
+            twitter_handles=[
+                "@thegreekgods",
+                "@greekgodsuk",
+            ],
             brand_name="Greek Gods",
             is_nonspecific_name=True,
         ),
         "Liberte": Brand(
-            twitter_handles=["@liberteusa", "@libertecanada"],
+            twitter_handles=[
+                "@liberteusa",
+                "@libertecanada",
+            ],
             brand_name="Liberte",
             alternate_names=[
                 "liberté",
@@ -322,35 +342,52 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> pd.DataFrame:
             is_nonspecific_name=True,
         ),
         "Maple Hill": Brand(
-            twitter_handles=["@maplehillcream"],
+            twitter_handles=[
+                "@maplehillcream",
+            ],
             brand_name="Maple Hill",
             is_nonspecific_name=True,
         ),
         "Noosa": Brand(
-            twitter_handles=["@noosayoghurt"],
+            twitter_handles=[
+                "@noosayoghurt",
+            ],
             brand_name="Noosa",
         ),
         "Organic Valley": Brand(
-            twitter_handles=["@OrganicValley"],
+            twitter_handles=[
+                "@OrganicValley",
+            ],
             brand_name="Organic Valley",
         ),
         "Siggi": Brand(
-            twitter_handles=["@siggisdairy"],
+            twitter_handles=[
+                "@siggisdairy",
+            ],
             brand_name="Siggi",
         ),
         "Smari": Brand(
-            twitter_handles=["@smariyogurt", "@smariorganics"],
+            twitter_handles=[
+                "@smariyogurt",
+                "@smariorganics",
+            ],
             brand_name="Smari",
             alternate_names=[
                 "smári",
+                "#SMARI",
             ],
+            is_nonspecific_name=True,
         ),
         "Stonyfield": Brand(
-            twitter_handles=["@stonyfield"],
+            twitter_handles=[
+                "@stonyfield",
+            ],
             brand_name="Stonyfield",
         ),
         "Wallaby": Brand(
-            twitter_handles=["@wallabyyogurt"],
+            twitter_handles=[
+                "@wallabyyogurt",
+            ],
             brand_name="Wallaby",
             is_nonspecific_name=True,
         ),
@@ -363,24 +400,40 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> pd.DataFrame:
         #     has_food_related_name=True,
         # ),
         "Yoplait": Brand(
-            twitter_handles=["@yoplait"],
+            twitter_handles=[
+                "@yoplait",
+            ],
             brand_name="Yoplait",
         ),
     }
 
     print(f"\n\nBefore filtering ::: {len(data_frame)}")
 
-    # this will filter out both greek_gods json file entries
     for values in brands.values():
         data_frame = remove_tweets_with_negative_keywords(data_frame, values)
-        data_frame = filter_irrelevant_data(
+        filtered_data_frame = filter_irrelevant_data(
             data_frame,
             brand=values,
-            relevancy_threshold=5,
+            relevancy_threshold=0,
         )
-    print(f"After filtering ::: {len(data_frame)}\n\n")
+        company_data_frame_list.append(filtered_data_frame)
+        # send filtered data_frame to sentiment analysis
+        analyze(
+            data_frame=filtered_data_frame,
+            company_name=values.brand_name.lower().replace(" ", "_"),
+        )
+    print(f"After filtering ::: {len(company_data_frame_list)}\n\n")
 
-    return data_frame
+    combined_filtered_data_frame = pd.concat(
+        company_data_frame_list, ignore_index=True
+    ).drop_duplicates()
+    combined_filtered_data_frame.to_csv(
+        "data/processed/combined_filtered_data_frame.csv", index=False
+    )
+    write_data_quality_text_file(combined_filtered_data_frame)
+    write_data_quality_csv_file(combined_filtered_data_frame)
+
+    return company_data_frame_list
 
 
 def remove_tweets_with_negative_keywords(
@@ -407,25 +460,18 @@ def preprocess_data():
     csv_list = get_csv_files()
 
     combined_data_frame = combine_csv_data(csv_list)
-    write_data_quality_text_file(combined_data_frame)
-    write_data_quality_csv_file(combined_data_frame)
 
     # remove twitter links - regex test here https://regex101.com/r/wZ0dAP/1
     combined_data_frame["text"] = combined_data_frame["text"].str.replace(
         r"http[s]?://t\.[^\s]*|[^[$]]", "", regex=True
     )
 
-    # drop duplicate tweets
-    # deduped_data_frame = combined_data_frame.drop_duplicates(subset=["text"])
-
     # filter out irrelevant data
-    filtered_data_frame = prepare_data_for_filtering(combined_data_frame)
+    filtered_data_frame_list = prepare_data_for_filtering(combined_data_frame)
 
-    print(len(filtered_data_frame))
-
-    # send reduced size data_frame to sentiment analysis
-    # analyze(filtered_and_deduped_data_frame.head(1000), 20)
-    # analyze(filtered_and_deduped_data_frame)
+    # for data_frame in filtered_data_frame_list:
+    #     # print(data_frame.head())
+    #     analyze(data_frame)
 
 
 if __name__ == "__main__":

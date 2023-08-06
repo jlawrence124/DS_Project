@@ -1,7 +1,8 @@
 import logging
+import os
 from dataclasses import dataclass
-from pathlib import Path
 from typing import List
+
 import pandas as pd
 import torch
 from tqdm import tqdm
@@ -22,8 +23,6 @@ else:
     device = torch.device("cpu")
     print("Using CPU device.")
 
-pipe = pipeline("text-classification", model=MODEL_NAME)
-
 sentiment_analyzer = pipeline(
     "text-classification",
     model=MODEL_NAME,
@@ -37,17 +36,18 @@ class Sentiment:
     """
     Sentiment object
     """
-    tweet_text=""
-    score=0.0
-    label=""
-    brand_risk=False
+    tweet_text: str = ""
+    score: float = 0.0
+    label: str = ""
+    brand_risk: bool = False
 
 
-def analyze(data_frame: pd.DataFrame, batch_size=50) -> List[Sentiment]:
+def analyze(data_frame: pd.DataFrame, batch_size: int=50, company_name: str="") -> pd.DataFrame:
     """
     Analyzes the sentiment of a given text by a set batch size.
     """
-    copied_data_frame = data_frame.copy()
+    # Reset the index of the data frame
+    copied_data_frame = data_frame.copy().reset_index(drop=True)
     raw_tweets_text = get_raw_tweet_text_data(data_frame)
     sentiments = []
     for i in tqdm(
@@ -55,7 +55,6 @@ def analyze(data_frame: pd.DataFrame, batch_size=50) -> List[Sentiment]:
     ):
         batch = raw_tweets_text[i : i + batch_size]
         result = sentiment_analyzer(batch)
-        print(result)
 
         sentiment_raw = []
         sentiment_scores = []
@@ -65,15 +64,14 @@ def analyze(data_frame: pd.DataFrame, batch_size=50) -> List[Sentiment]:
             sentiment_raw.append(Sentiment(tweet, float(res["score"]), res["label"]))
             sentiment_scores.append(res["score"])
             sentiment_labels.append(res["label"])
-        copied_data_frame.loc[i : i + len(batch) - 1, "sentiment_score"] = sentiment_scores
-        copied_data_frame.loc[i : i + len(batch) - 1, "sentiment"] = sentiment_labels
+        end_index = i + len(batch) - 1
+
+        copied_data_frame.loc[i : end_index, "sentiment_score"] = sentiment_scores
+        copied_data_frame.loc[i : end_index, "sentiment"] = sentiment_labels
         sentiments.extend(sentiment_raw)
 
-    print(sentiments[0:10] + ["..."] + sentiments[-10:])
-    # copied_data_frame["sentiment"] = sentiments
-    write_sentiment_to_csv(copied_data_frame)
-    return sentiments
-
+    write_company_data_frame_to_csv(copied_data_frame, company_name)
+    return copied_data_frame
 
 def get_raw_tweet_text_data(data_frame: pd.DataFrame) -> List[str]:
     """
@@ -81,9 +79,18 @@ def get_raw_tweet_text_data(data_frame: pd.DataFrame) -> List[str]:
     """
     return data_frame["text"].tolist()
 
-
-def write_sentiment_to_csv(data_frame: pd.DataFrame):
+def write_company_data_frame_to_csv(
+    filtered_data_frame: pd.DataFrame,
+    company_name_snake_case: str,
+):
     """
     Writes a csv file with sentiment analysis of the dataset.
     """
-    data_frame.to_csv(Path("data/processed/sentiment_small.csv"), index=False, encoding="utf-8")
+    directory_path = f"data/processed/companies/{company_name_snake_case}"
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+
+    filtered_data_frame_path = (
+        f"{directory_path}/{company_name_snake_case}_relevant_tweets.csv"
+    )
+    filtered_data_frame.to_csv(filtered_data_frame_path, index=False, encoding="utf-8")

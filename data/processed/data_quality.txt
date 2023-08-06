@@ -8,7 +8,7 @@ Index(['Key', 'text', 'lang', 'created_at', 'created_day', 'timeonly',
       dtype='object')
 
 Number of rows:
-31567
+16433
 
 Number of null rows:
 Key                          0
@@ -20,20 +20,20 @@ timeonly                     0
 created_dateonly             0
 datetime                     0
 retweet_count                0
-coordinates              31424
-geo                      31424
-place                    30881
+coordinates              16383
+geo                      16383
+place                    15998
 retweeted                    0
 truncated                    0
 user_favourites_count        0
 user_followers_count         0
-user_following               6
+user_following               0
 user_friends_count           0
 user_geo_enabled             0
 user_listed_count            0
-user_location             8472
+user_location             3623
 user_statuses_count          0
-user_time_zone            8975
+user_time_zone            4586
 user_screen_name             0
 file                         0
 dtype: int64
@@ -44,8 +44,8 @@ Number of duplicate rows:
 highest retweet count entries:
 
                      Key                                               text  retweet_count  retweeted  user_followers_count user_screen_name
-18540  18541  RT @PennStateIFC: With the current devastation...        1142924      False                   139    Xx_Chobani_xX
-30591  30592  RT @BarackObama: "People must learn to hate, a...         404311      False                   463   Shaniel_Dannon
-15072  15073  RT @itssavannahxox: so i ordered a chair for m...         273976      False                   138    Xx_Chobani_xX
-15119  15120  RT @itssavannahxox: so i ordered a chair for m...         273976      False                   354        _CHOBANI_
-29393  29394  RT @jk_rowling: Hell of a day for the Presiden...         264722      False                   238        chobani__
+378       87  RT @4everNeverTrump: Conservatives have been o...           4207      False                   259   thoughtShopper
+12404   3071  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     4          ninkaze
+12405   3072  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                    60       cragtongue
+12406   3073  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                   650           pitzx2
+14068  13048  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     8  A4POMWWykEZJM7F
