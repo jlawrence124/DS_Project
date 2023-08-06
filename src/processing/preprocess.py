@@ -1,37 +1,26 @@
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List
+from typing import List
+
 import pandas as pd
-from sentiment_analysis import analyze
-from resources.word_lists import (
-    get_yogurt_keywords,
+
+from src.processing.sentiment_analysis import analyze
+from src.resources.brands_data import Brand, brands
+from src.resources.word_lists import (
     food_related_keywords,
-    yogurt_brand_names,
-    yogurt_brand_accounts,
-    secondary_yogurt_brands,
+    get_yogurt_keywords,
     secondary_yogurt_brand_accounts,
+    secondary_yogurt_brands,
+    yogurt_brand_accounts,
+    yogurt_brand_names,
 )
-
-
-@dataclass
-class Brand:
-    """
-    Brand object
-    """
-
-    twitter_handles: List[str]
-    brand_name: str
-    alternate_names: List[str] = field(default_factory=list)
-    negative_keywords: List[str] = field(default_factory=list)
-    is_nonspecific_name: bool = False
-    has_food_related_name: bool = False
 
 
 def get_csv_files() -> List[str]:
     """
     Returns a list of all csv files in the data/raw directory.
     """
-    csv_files = [str(file) for file in Path("data/raw").glob("*.csv")]
+    print(Path("../data/raw").glob("*.csv"))
+    csv_files = [str(file) for file in Path("../data/raw").glob("*.csv")]
     return csv_files
 
 
@@ -176,7 +165,9 @@ def filter_irrelevant_data(
                     or any(word in x.lower() for word in yogurt_brand_names)
                     or any(word in x.lower() for word in yogurt_brand_accounts)
                     or any(word in x.lower() for word in secondary_yogurt_brands)
-                    or any(word in x.lower() for word in secondary_yogurt_brand_accounts)
+                    or any(
+                        word in x.lower() for word in secondary_yogurt_brand_accounts
+                    )
                 )
             )
         ]
@@ -211,137 +202,15 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> List[pd.DataFrame]:
     """
     company_data_frame_list = []
 
-    # brand dict with twitter handles, company name, and alternate names
-    brands: Dict[str, Brand] = {
-        "Activia": Brand(
-            twitter_handles=[
-                "@activia",
-                "@activiauk",
-            ],
-            brand_name="Activia",
-            negative_keywords=[
-                "activia benz",
-                "mens-rights-activia",
-            ],
-        ),
-        "Chobani": Brand(
-            twitter_handles=[
-                "@chobani",
-                "@chobani_uk",
-            ],
-            brand_name="Chobani",
-        ),
-        "Dannon": Brand(
-            twitter_handles=[
-                "@dannon",
-            ],
-            brand_name="Dannon",
-            alternate_names=[
-                "danone",
-            ],
-            is_nonspecific_name=True,
-        ),
-        "Fage": Brand(
-            twitter_handles=[
-                "@fageusa",
-                "@fageuk",
-            ],
-            brand_name="Fage",
-        ),
-        "Greek Gods": Brand(
-            twitter_handles=[
-                "@thegreekgods",
-                "@greekgodsuk",
-            ],
-            brand_name="Greek Gods",
-            is_nonspecific_name=True,
-        ),
-        "Liberte": Brand(
-            twitter_handles=[
-                "@liberteusa",
-                "@libertecanada",
-            ],
-            brand_name="Liberte",
-            alternate_names=[
-                "liberté",
-            ],
-            is_nonspecific_name=True,
-        ),
-        "Maple Hill": Brand(
-            twitter_handles=[
-                "@maplehillcream",
-            ],
-            brand_name="Maple Hill",
-            is_nonspecific_name=True,
-        ),
-        "Noosa": Brand(
-            twitter_handles=[
-                "@noosayoghurt",
-            ],
-            brand_name="Noosa",
-        ),
-        "Organic Valley": Brand(
-            twitter_handles=[
-                "@OrganicValley",
-            ],
-            brand_name="Organic Valley",
-        ),
-        "Siggi": Brand(
-            twitter_handles=[
-                "@siggisdairy",
-            ],
-            brand_name="Siggi",
-        ),
-        "Smari": Brand(
-            twitter_handles=[
-                "@smariyogurt",
-                "@smariorganics",
-            ],
-            brand_name="Smari",
-            alternate_names=[
-                "smári",
-                "#SMARI",
-            ],
-            is_nonspecific_name=True,
-        ),
-        "Stonyfield": Brand(
-            twitter_handles=[
-                "@stonyfield",
-            ],
-            brand_name="Stonyfield",
-        ),
-        "Wallaby": Brand(
-            twitter_handles=[
-                "@wallabyyogurt",
-            ],
-            brand_name="Wallaby",
-            is_nonspecific_name=True,
-        ),
-        # Vanilla Bean is muddying the data and is likely not even a brand
-        # "Vanilla Bean": Brand(
-        #     twitter_handles=[],
-        #     brand_name="Vanilla Bean",
-        #     alternate_names=[],
-        #     is_nonspecific_name=True,
-        #     has_food_related_name=True,
-        # ),
-        "Yoplait": Brand(
-            twitter_handles=[
-                "@yoplait",
-            ],
-            brand_name="Yoplait",
-        ),
-    }
-
     print(f"\n\nBefore filtering ::: {len(data_frame)}")
 
     for values in brands.values():
-        data_frame = remove_tweets_with_negative_keywords(data_frame, values)
         filtered_data_frame = filter_irrelevant_data(
             data_frame,
             brand=values,
             relevancy_threshold=0,
         )
+        filtered_data_frame = remove_tweets_with_negative_keywords(data_frame, values)
         company_data_frame_list.append(filtered_data_frame)
         # send filtered data_frame to sentiment analysis
         analyze(

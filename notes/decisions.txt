@@ -4,3 +4,4 @@
         * the tweets we have are a subset of the global number of tweets that the "retweet_count" refers to 
     * retweet_count is still relevant, but it is better suited for combination with things like follower count
 * for now, got rid of relevancy_threshold in preprocessing.py.  This was originally intended to remove noise, but given there is one valid "smari" entry, this should be optional
+* used NLTK for the tokenization and 
