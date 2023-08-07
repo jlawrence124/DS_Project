@@ -1,0 +1,11 @@
+bigram,frequency
+"('#ad', '#dannonatwm')",675
+"('post-workout', 'afternoon')",385
+"('afternoon', 'pick-me-up')",385
+"('pick-me-up', 'grab')",385
+"('grab', '@lightandfit')",385
+"('💐', '#ad')",350
+"('click', 'learn')",349
+"('learn', '#healthyeating')",340
+"('#healthyeating', '#snack')",340
+"('#snack', '#dannon')",340

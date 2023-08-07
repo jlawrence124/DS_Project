@@ -1,0 +1,11 @@
+bigram,frequency
+"('greek', 'gods')",9
+"('get', 'hip')",3
+"('hip', 'wth')",3
+"('wth', 'fermentation')",3
+"('fermentation', 'oui')",3
+"('oui', 'goes')",3
+"('goes', 'greek')",3
+"('gods', 'goddesses')",3
+"('still', 'purchase')",2
+"('purchase', 'liberte')",2

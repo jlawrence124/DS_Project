@@ -1,0 +1,11 @@
+bigram,frequency
+"('organic', 'valley')",20
+"('organic', 'fuel')",5
+"('valley', 'introduces')",4
+"('valley', 'organic')",3
+"('introduces', 'organic')",3
+"('fuel', 'whey')",3
+"('whey', 'powder')",3
+"('thinking', 'ahead')",2
+"('ahead', 'sunday')",2
+"('sunday', 'morning')",2

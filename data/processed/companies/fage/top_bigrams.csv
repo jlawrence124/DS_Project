@@ -1,0 +1,11 @@
+bigram,frequency
+"('@johnmayer', 'shots')",5
+"('shots', 'fired')",5
+"('fired', '@tillamookcheese')",5
+"('someone', 'says')",5
+"('says', 'better')",5
+"('aardvark', 'many')",4
+"('many', 'brands')",4
+"('brands', 'enough')",4
+"('enough', 'already')",4
+"('#monday', 'get')",4

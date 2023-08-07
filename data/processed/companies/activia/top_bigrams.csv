@@ -1,0 +1,11 @@
+bigram,frequency
+"('jamie', 'lee')",20
+"('lee', 'curtis')",18
+"('👌', '👌')",10
+"('bad', 'bitches')",10
+"('@hawillisdc', 'bad')",9
+"('look', 'like')",8
+"('75', '¢')",8
+"('dannon', '4')",7
+"('@morganpaigelove', 'needs')",7
+"('needs', 'seeing')",7

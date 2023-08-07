@@ -1,0 +1,11 @@
+bigram,frequency
+"('maple', 'hill')",4
+"('hill', 'milk')",4
+"('milk', 'bottle')",4
+"('bottle', 'round')",4
+"('round', 'red')",4
+"('red', 'pyro')",4
+"('@barntiques859', 'maple')",3
+"('pyro', 'maple')",2
+"('@patrickhinds', 'await')",2
+"('await', 'follow')",2

@@ -68,6 +68,7 @@ def analyze(data_frame: pd.DataFrame, batch_size: int=50, company_name: str="") 
 
         copied_data_frame.loc[i : end_index, "sentiment_score"] = sentiment_scores
         copied_data_frame.loc[i : end_index, "sentiment"] = sentiment_labels
+        copied_data_frame.loc[i : end_index, "company_name"] = company_name
         sentiments.extend(sentiment_raw)
 
     write_company_data_frame_to_csv(copied_data_frame, company_name)

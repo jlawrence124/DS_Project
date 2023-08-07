@@ -1,0 +1,11 @@
+bigram,frequency
+"('@walmart', '#ad')",368
+"('recall', 'liberte')",280
+"('expands', 'recall')",279
+"('canadian', 'food')",257
+"('food', 'inspection')",255
+"('inspection', 'agency')",255
+"('agency', 'expands')",247
+"('#yoplaitmixins', '#creamycrunchyyoplait')",237
+"('#creamycrunchyyoplait', '#ad')",216
+"('#ouibyyoplait', '@walmart')",151

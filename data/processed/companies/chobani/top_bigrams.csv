@@ -1,0 +1,11 @@
+bigram,frequency
+"('guy', 'got')",271
+"('got', 'war')",271
+"('war', 'lost')",271
+"('lost', 'right')",271
+"('right', 'war')",271
+"('war', 'fermented')",271
+"('fermented', 'milk')",271
+"('@andylassner', 'guy')",270
+"('milk', 'pu')",270
+"('pu', '@andylassner')",213

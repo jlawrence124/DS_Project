@@ -1,0 +1,11 @@
+bigram,frequency
+"('upf', '50')",8
+"('unisex', 'neck')",7
+"('neck', 'flap')",7
+"('flap', 'sunhat')",7
+"('sunhat', 'upf')",7
+"('50', 'foldable')",7
+"('foldable', 'chin')",7
+"('chin', 'cord')",7
+"('cord', 'mesh')",7
+"('mesh', 'lining')",7

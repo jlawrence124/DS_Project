@@ -209,7 +209,7 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> List[pd.DataFrame]:
     """
     company_data_frame_list = []
 
-    print(f"\n\nBefore filtering ::: {len(data_frame)}")
+    print(f"\n\nTotal Raw Tweets ::: {len(data_frame)}")
 
     for values in brands.values():
         filtered_data_frame = filter_irrelevant_data(
@@ -217,14 +217,17 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> List[pd.DataFrame]:
             brand=values,
             relevancy_threshold=0,
         )
-        filtered_data_frame = remove_tweets_with_negative_keywords(filtered_data_frame, values)
-        company_data_frame_list.append(filtered_data_frame)
+        filtered_data_frame = remove_tweets_with_negative_keywords(
+            filtered_data_frame, values
+        )
+
         # send filtered data_frame to sentiment analysis
-        analyze(
+        copied_df = analyze(
             data_frame=filtered_data_frame,
             company_name=values.brand_name.lower().replace(" ", "_"),
         )
-    print(f"After filtering ::: {len(company_data_frame_list)}\n\n")
+
+        company_data_frame_list.append(copied_df)
 
     combined_filtered_data_frame = pd.concat(
         company_data_frame_list, ignore_index=True
@@ -255,7 +258,7 @@ def remove_tweets_with_negative_keywords(
     ]
 
 
-def preprocess_data():
+def preprocess_data() -> List[pd.DataFrame]:
     """
     Calls other functions to preprocess the data.
     """
@@ -269,7 +272,7 @@ def preprocess_data():
     )
 
     # filter out irrelevant data
-    prepare_data_for_filtering(combined_data_frame)
+    return prepare_data_for_filtering(combined_data_frame)
 
 
 if __name__ == "__main__":

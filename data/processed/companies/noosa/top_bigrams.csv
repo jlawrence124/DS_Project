@@ -1,0 +1,11 @@
+bigram,frequency
+"('sees', 'regular')",22
+"('regular', 'raises')",22
+"('raises', 'pumpkin')",22
+"('pumpkin', 'pie')",22
+"('pie', 'heaven')",22
+"('heaven', 'cup')",20
+"('diving', 'hot')",12
+"('hot', 'new')",12
+"('new', 'trend')",12
+"('really', 'good')",6

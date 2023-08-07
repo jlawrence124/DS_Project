@@ -1,0 +1,11 @@
+bigram,frequency
+"('@neokaitiger', ""siggi's"")",1
+"(""siggi's"", 'good')",1
+"('good', 'imo')",1
+"('imo', ""there's"")",1
+"(""there's"", 'also')",1
+"('also', 'wallaby')",1
+"('wallaby', 'brand')",1
+"('brand', 'kefir')",1
+"('kefir', ""can't"")",1
+"(""can't"", 'help')",1

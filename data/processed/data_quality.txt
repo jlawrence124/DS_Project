@@ -4,11 +4,12 @@ Index(['Key', 'text', 'lang', 'created_at', 'created_day', 'timeonly',
        'place', 'retweeted', 'truncated', 'user_favourites_count',
        'user_followers_count', 'user_following', 'user_friends_count',
        'user_geo_enabled', 'user_listed_count', 'user_location',
-       'user_statuses_count', 'user_time_zone', 'user_screen_name', 'file'],
+       'user_statuses_count', 'user_time_zone', 'user_screen_name', 'file',
+       'company_name'],
       dtype='object')
 
 Number of rows:
-16433
+18014
 
 Number of null rows:
 Key                          0
@@ -20,9 +21,9 @@ timeonly                     0
 created_dateonly             0
 datetime                     0
 retweet_count                0
-coordinates              16383
-geo                      16383
-place                    15998
+coordinates              17963
+geo                      17963
+place                    17561
 retweeted                    0
 truncated                    0
 user_favourites_count        0
@@ -31,11 +32,12 @@ user_following               0
 user_friends_count           0
 user_geo_enabled             0
 user_listed_count            0
-user_location             3623
+user_location             3943
 user_statuses_count          0
-user_time_zone            4586
+user_time_zone            4997
 user_screen_name             0
 file                         0
+company_name                 0
 dtype: int64
 
 Number of duplicate rows:
@@ -43,9 +45,9 @@ Number of duplicate rows:
 
 highest retweet count entries:
 
-                     Key                                               text  retweet_count  retweeted  user_followers_count user_screen_name
-378       87  RT @4everNeverTrump: Conservatives have been o...           4207      False                   259   thoughtShopper
-12403   3071  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     4          ninkaze
-12404   3072  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                    60       cragtongue
-12405   3073  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                   650           pitzx2
-14067  13048  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     8  A4POMWWykEZJM7F
+                     Key                                               text  retweet_count  retweeted  user_followers_count user_screen_name company_name
+378       87  RT @4everNeverTrump: Conservatives have been o...           4207      False                   259   thoughtShopper      chobani
+12403   3071  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     4          ninkaze      yoplait
+12404   3072  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                    60       cragtongue      yoplait
+12405   3073  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                   650           pitzx2      yoplait
+14067  13048  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     8  A4POMWWykEZJM7F      yoplait

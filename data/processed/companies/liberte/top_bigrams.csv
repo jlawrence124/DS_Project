@@ -1,0 +1,11 @@
+bigram,frequency
+"('recall', 'liberte')",280
+"('expands', 'recall')",278
+"('canadian', 'food')",256
+"('food', 'inspection')",254
+"('inspection', 'agency')",254
+"('agency', 'expands')",246
+"('minigo', 'liberte')",99
+"('pieces', 'plastic')",96
+"('liberté', 'brand')",68
+"('products', 'recalled')",67

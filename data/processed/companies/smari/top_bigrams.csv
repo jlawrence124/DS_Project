@@ -1,0 +1,7 @@
+bigram,frequency
+"('celebrate', 'fourth')",1
+"('fourth', 'july')",1
+"('july', 'favorite')",1
+"('favorite', 'recipes')",1
+"('recipes', 'made')",1
+"('made', 'smári')",1

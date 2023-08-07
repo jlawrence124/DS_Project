@@ -1,0 +1,11 @@
+bigram,frequency
+"('875', 'million')",231
+"('danone', 'sell')",194
+"('sell', '875')",172
+"(""france's"", 'danone')",97
+"('danone', 'selling')",63
+"('big', 'news')",49
+"('news', 'big')",49
+"('big', 'danone')",47
+"('danone', 'sells')",44
+"('ez2c', 'package')",36
