@@ -41,4 +41,3 @@ env/
 *.egg-info/
 dist/
 build/
-data/processed/*

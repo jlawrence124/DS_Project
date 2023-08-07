@@ -21,7 +21,7 @@ elif torch.cuda.is_available():
     print("Using CUDA device.")
 else:
     device = torch.device("cpu")
-    print("Using CPU device.")
+    print("Using CPU.")
 
 sentiment_analyzer = pipeline(
     "text-classification",

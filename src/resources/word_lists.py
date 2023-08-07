@@ -1,17 +1,10 @@
-from typing import List    
-
-def get_yogurt_keywords(brand_name: str) -> List[str]:
-    """
-    Returns a list of yogurt keywords with an appended brand name.
-    """
-    return [
-        "yogurt",
-        "yoghurt",
-        "yoghourt",
-        "pro-biotic",
-        "probiotic",
-        brand_name,
-    ]
+yogurt_keywords = [
+    "yogurt",
+    "yoghurt",
+    "yoghourt",
+    "pro-biotic",
+    "probiotic",
+]
 
 food_related_keywords = [
     "delicious",

@@ -7,7 +7,7 @@ from src.processing.sentiment_analysis import analyze
 from src.resources.brands_data import Brand, brands
 from src.resources.word_lists import (
     food_related_keywords,
-    get_yogurt_keywords,
+    yogurt_keywords,
     secondary_yogurt_brand_accounts,
     secondary_yogurt_brands,
     yogurt_brand_accounts,
@@ -19,8 +19,7 @@ def get_csv_files() -> List[str]:
     """
     Returns a list of all csv files in the data/raw directory.
     """
-    print(Path("../data/raw").glob("*.csv"))
-    csv_files = [str(file) for file in Path("../data/raw").glob("*.csv")]
+    csv_files = [str(file) for file in Path("./data/raw").glob("*.csv")]
     return csv_files
 
 
@@ -128,7 +127,6 @@ def filter_irrelevant_data(
     company_keywords = company_twitter_handles + [brand_name_lower] + alternate_names
 
     combined_keywords = []
-    yogurt_keywords = get_yogurt_keywords(brand_name_lower)
 
     combined_keywords = (
         yogurt_keywords
@@ -147,26 +145,35 @@ def filter_irrelevant_data(
     # we need to at least have another brand mention or yogurt keyword
     if brand.is_nonspecific_name:
         # remove the current brand name from the list of yogurt brands
-        yogurt_brand_names.remove(brand_name_lower)
+        if brand_name_lower in yogurt_brand_names:
+            yogurt_brand_names.remove(brand_name_lower)
+
         relevant_tweets = data_frame[
             data_frame["text"].apply(
                 lambda x: (
-                    brand_name_lower in x.lower()
-                    or any(word in x.lower() for word in company_keywords)
-                )
-                and (
-                    # if the tweet mentions any yogurt keywords
                     (
-                        any(word in x.lower() for word in yogurt_keywords)
-                        # or if the tweet mentions any food related keywords
-                        or any(word in x.lower() for word in food_related_keywords)
+                        brand_name_lower in x.lower()
+                        or any(word in x.lower() for word in company_keywords)
                     )
-                    # if the tweet mentions another yogurt brand
-                    or any(word in x.lower() for word in yogurt_brand_names)
-                    or any(word in x.lower() for word in yogurt_brand_accounts)
-                    or any(word in x.lower() for word in secondary_yogurt_brands)
-                    or any(
-                        word in x.lower() for word in secondary_yogurt_brand_accounts
+                    and (
+                        (
+                            # if the tweet mentions any yogurt keywords
+                            any(word in x.lower() for word in yogurt_keywords)
+                            # or if the tweet mentions any food related keywords
+                            or any(word in x.lower() for word in food_related_keywords)
+                        )
+                        # if the tweet mentions another yogurt brand
+                        or (
+                            any(word in x.lower() for word in yogurt_brand_names)
+                            or any(word in x.lower() for word in yogurt_brand_accounts)
+                            or any(
+                                word in x.lower() for word in secondary_yogurt_brands
+                            )
+                            or any(
+                                word in x.lower()
+                                for word in secondary_yogurt_brand_accounts
+                            )
+                        )
                     )
                 )
             )
@@ -174,7 +181,7 @@ def filter_irrelevant_data(
     else:
         relevant_tweets = data_frame[
             (
-                data_frame["text"].str.contains(brand_name)
+                data_frame["text"].str.contains(brand_name_lower, case=False)
                 | data_frame["text"].apply(
                     lambda x: any(word in x.lower() for word in company_keywords)
                 )
@@ -210,7 +217,7 @@ def prepare_data_for_filtering(data_frame: pd.DataFrame) -> List[pd.DataFrame]:
             brand=values,
             relevancy_threshold=0,
         )
-        filtered_data_frame = remove_tweets_with_negative_keywords(data_frame, values)
+        filtered_data_frame = remove_tweets_with_negative_keywords(filtered_data_frame, values)
         company_data_frame_list.append(filtered_data_frame)
         # send filtered data_frame to sentiment analysis
         analyze(
@@ -262,11 +269,7 @@ def preprocess_data():
     )
 
     # filter out irrelevant data
-    filtered_data_frame_list = prepare_data_for_filtering(combined_data_frame)
-
-    # for data_frame in filtered_data_frame_list:
-    #     # print(data_frame.head())
-    #     analyze(data_frame)
+    prepare_data_for_filtering(combined_data_frame)
 
 
 if __name__ == "__main__":
