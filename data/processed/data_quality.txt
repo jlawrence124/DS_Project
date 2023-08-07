@@ -45,7 +45,7 @@ highest retweet count entries:
 
                      Key                                               text  retweet_count  retweeted  user_followers_count user_screen_name
 378       87  RT @4everNeverTrump: Conservatives have been o...           4207      False                   259   thoughtShopper
-12404   3071  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     4          ninkaze
-12405   3072  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                    60       cragtongue
-12406   3073  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                   650           pitzx2
-14068  13048  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     8  A4POMWWykEZJM7F
+12403   3071  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     4          ninkaze
+12404   3072  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                    60       cragtongue
+12405   3073  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                   650           pitzx2
+14067  13048  RT @Yoplait: Being A Man of Yogurt, I know how...           1842      False                     8  A4POMWWykEZJM7F
